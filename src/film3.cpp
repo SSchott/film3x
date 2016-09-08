@@ -2900,24 +2900,35 @@ void repmc(void){
     	    minsteps = 0;
     	}
     }else{
-        if(curr_helices < helices && totalsteps >= (curr_helices*((0.5*MAXSTEPS)/(helices-2)))){
+    	/* Fix for 3 helices */
+        if(helices == 3 && curr_helices < helices && totalsteps >= (curr_helices*((0.25*MAXSTEPS)/(helices-2)))){
             curr_helices++;
             curr_seqlen = 1+topology[(curr_helices*2)-1];
             last_boundary = 1+topology[(curr_helices*2)-3];
-            printf("\n***** Folding helices 1 - %d - Sequence length = %d\n", curr_helices,curr_seqlen); 
+            printf("\n***** Folding helices 1 - %d - Sequence length = %d\n", curr_helices,curr_seqlen);
             e_min = eval(curchn, FALSE);
             z_rot_best = 0, x_rot_best = 0, y_rot_best = 0, z_trans_best = 0;
-            writepdb(curchn, e_min);  
-            minsteps = 0;     
+            writepdb(curchn, e_min);
+            minsteps = 0;
+        }else if(helices != 3 && curr_helices < helices && totalsteps >= (curr_helices*((0.5*MAXSTEPS)/(helices-2)))){
+            curr_helices++;
+            curr_seqlen = 1+topology[(curr_helices*2)-1];
+            last_boundary = 1+topology[(curr_helices*2)-3];
+            printf("\n***** Folding helices 1 - %d - Sequence length = %d\n", curr_helices,curr_seqlen);
+            e_min = eval(curchn, FALSE);
+            z_rot_best = 0, x_rot_best = 0, y_rot_best = 0, z_trans_best = 0;
+            writepdb(curchn, e_min);
+            minsteps = 0;
         }else if(curr_helices == helices){
-            curr_seqlen = seqlen; 
-            last_boundary = 0;    
+            curr_seqlen = seqlen;
+            last_boundary = 0;
             if (minsteps > MAXSTEPS / seqlen / 4){
                 printf("New Target Range = %d\n", targrange = 6 + seqlen * 1.1 * totalsteps / MAXSTEPS);
                 minsteps = 0;
             }
         }
-    }    
+    }
+ 
 
 
 	for (i=0; i<poolsize; i++)
